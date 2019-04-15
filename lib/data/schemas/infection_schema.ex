@@ -19,10 +19,10 @@ defmodule Data.Infection do
     params = params |> Map.new(fn {k, v} -> {to_string(k), v} end)
 
     struct
-      |> cast(params, [
-        :encounter_id,
-        :is_complete,
-      ])
-      |> foreign_key_constraint(:encounter_id)
+    |> cast(params, [
+      :encounter_id,
+      :is_complete
+    ])
+    |> foreign_key_constraint(:encounter_id)
   end
 end
