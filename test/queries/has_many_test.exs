@@ -22,18 +22,25 @@ defmodule Data.HasManyTest do
   test "same resource returned multiple times when preload has_many relation", %{
     infection: infection_passed
   } do
-    patient_query = from p0 in Data.Patient, limit: ^200, offset: ^0, select: map(p0, [:id])
+    patient_query =
+      from p0 in Data.Patient,
+        limit: ^200,
+        offset: ^0,
+        select: map(p0, [:id, :first_name, :last_name])
 
     encounter_query =
       from e0 in Data.Encounter,
         left_join: p1 in assoc(e0, :patient),
         limit: ^200,
         offset: ^0,
-        select: map(e0, [:id, :patient_id]),
+        select: map(e0, [:id, :patient_id, :is_active]),
         preload: [patient: ^patient_query]
 
     revisions_query =
-      from i0 in Data.InfectionRevision, limit: ^200, offset: ^0, select: map(i0, [:revision_id])
+      from i0 in Data.InfectionRevision,
+        limit: ^200,
+        offset: ^0,
+        select: map(i0, [:revision_id, :infection_id])
 
     query =
       from i0 in Data.Infection,
@@ -42,7 +49,7 @@ defmodule Data.HasManyTest do
         order_by: [asc: i0.id],
         limit: ^10,
         offset: ^0,
-        select: map(i0, [:id, :encounter_id]),
+        select: map(i0, [:id, :encounter_id, :is_active]),
         preload: [encounter: ^encounter_query, revisions: ^revisions_query]
 
     infections = Data.Repo.all(query)
@@ -66,14 +73,18 @@ defmodule Data.HasManyTest do
   test "same resource returned ok when we do not preload has_many relation", %{
     infection: infection_passed
   } do
-    patient_query = from p0 in Data.Patient, limit: ^200, offset: ^0, select: map(p0, [:id])
+    patient_query =
+      from p0 in Data.Patient,
+        limit: ^200,
+        offset: ^0,
+        select: map(p0, [:id, :first_name, :last_name])
 
     encounter_query =
       from e0 in Data.Encounter,
         left_join: p1 in assoc(e0, :patient),
         limit: ^200,
         offset: ^0,
-        select: map(e0, [:id, :patient_id]),
+        select: map(e0, [:id, :patient_id, :is_active]),
         preload: [patient: ^patient_query]
 
     query =
@@ -82,7 +93,7 @@ defmodule Data.HasManyTest do
         order_by: [asc: i0.id],
         limit: ^10,
         offset: ^0,
-        select: map(i0, [:id, :encounter_id]),
+        select: map(i0, [:id, :encounter_id, :is_active]),
         preload: [encounter: ^encounter_query]
 
     infections = Data.Repo.all(query)
